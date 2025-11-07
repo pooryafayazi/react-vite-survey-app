@@ -1,0 +1,40 @@
+// src/styles/custom.scss
+// Global polish
+body { background: #f8fafc; }
+.survey-root { min-height: 100dvh; }
+.card { border-radius: 1rem; }
+.btn { border-radius: .75rem; }
+.progress { height: .6rem; border-radius: 999px; }
+
+
+// RTL-friendly spacing
+html[dir='rtl'] .form-check { padding-right: 2.25rem; }
+
+
+/* === RTL-safe bordered checkboxes === */
+.k-check.form-check{
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  padding-block: .6rem;
+  padding-inline: 1rem 2.4rem;   
+}
+html[dir='rtl'] .k-check.form-check{
+  padding-inline: 2.4rem 1rem;    
+}
+
+.k-check .form-check-input{
+  position: absolute;
+  inset-inline-end: .8rem;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+
+.k-check .form-check-label{
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
