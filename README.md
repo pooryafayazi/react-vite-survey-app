@@ -42,8 +42,7 @@ React, Vite, react-bootstrap, Bootstrap, React Router, Framer Motion
     │ ├─ pages/
     │ │ └─ ThankYou.jsx
     │ ├─ components/
-    │ │ ├─ QuestionRenderer.jsx
-    │ │ └─ StepNav.jsx
+    │ │ └─QuestionRenderer.jsx
     │ ├─ data/
     │ │ └─ questions.js
     │ ├─ styles/
