@@ -27,7 +27,7 @@ React, Vite, react-bootstrap, Bootstrap, React Router, Framer Motion
     npm i bootstrap react-bootstrap react-router-dom framer-motion classnames
 
 
-## (Optional) SCSS support for custom styles
+## SCSS support for custom styles
 
     npm i -D sass
 
