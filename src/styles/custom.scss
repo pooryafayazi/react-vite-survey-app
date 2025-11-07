@@ -38,3 +38,6 @@ html[dir='rtl'] .k-check.form-check{
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+.badge.bg-warning, .badge.bg-danger { font-variant-numeric: tabular-nums; }

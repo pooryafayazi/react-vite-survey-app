@@ -8,7 +8,51 @@ import questions from './data/questions.js';
 import { loadState, saveState, clearState } from './utils/storage.js';
 
 
+const LIMIT_MS = 2 * 60 * 1000; // 2 دقیقه
+
+function formatMs(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+
+
 export default function App() {
+  // deadline را فقط اولین‌بار می‌سازیم و در storage ذخیره می‌کنیم
+  const [deadline, setDeadline] = useState(() => loadState('rvsa-deadline'));
+  useEffect(() => {
+    if (!deadline) {
+      const t = Date.now() + LIMIT_MS;
+      setDeadline(t);
+      saveState('rvsa-deadline', t);
+    }
+  }, [deadline]);
+
+  // باقی‌ماندهٔ زمان (هر ثانیه به‌روزرسانی)
+  const [left, setLeft] = useState(() => {
+    const d = loadState('rvsa-deadline');
+    return d ? Math.max(0, d - Date.now()) : LIMIT_MS;
+  });
+
+  useEffect(() => {
+    if (!deadline) return;
+    const id = setInterval(() => {
+      setLeft(Math.max(0, deadline - Date.now()));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [deadline]);
+
+  // اگر زمان تمام شد → ذخیرهٔ وضعیت و رفتن به صفحهٔ تشکر با پیام اتمام زمان
+  useEffect(() => {
+    if (left <= 0 && deadline) {
+      saveState('rvsa-finish-reason', 'timeout');
+      saveState('rvsa-answers-final', answers);
+      // deadline را عمداً پاک نمی‌کنیم تا با رفرش هم پیام باقی بماند
+      nav('/thanks', { replace: true });
+    }
+  }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
   const nav = useNavigate();
   const steps = useMemo(() => questions, []);
 
@@ -51,16 +95,10 @@ export default function App() {
 
 
   function submit() {
-    // safe log for review (assignment asks to log to console) // eslint-disable-next-line no-console    
-    console.log('\n\n=== Survey Submission ===');
-    steps.forEach(q => {       
-      console.log(`${q.title}:`, answers[q.id]); 
-    });
-
-
     clearState('rvsa-index');
     // keep answers in storage so ThankYou can show summary if needed
     saveState('rvsa-answers-final', answers);
+    saveState('rvsa-finish-reason', 'submitted');
     nav('/thanks');
   }
 
@@ -75,7 +113,14 @@ export default function App() {
           <Col md={8} lg={7} xl={6}>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h1 className="h4 m-0">فرم نظرسنجی</h1>
-              <Badge bg="primary" pill>{index + 1}/{total}</Badge>
+              <div className="d-flex align-items-center gap-2">
+                <Badge bg="primary" pill>{index + 1}/{total}</Badge>
+                <Badge
+                  bg={left <= 15000 ? 'danger' : left <= 45000 ? 'warning' : 'secondary'}
+                  title="زمان باقی‌مانده">
+                  {formatMs(left)}
+                </Badge>
+              </div>
             </div>
             <ProgressBar now={progress} className="mb-3" aria-label="پیشرفت" />
 
